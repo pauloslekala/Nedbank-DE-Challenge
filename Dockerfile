@@ -24,6 +24,10 @@ RUN curl -fL https://repo1.maven.org/maven2/io/delta/delta-spark_2.12/3.1.0/delt
 ENV SPARK_LOCAL_IP=127.0.0.1
 ENV SPARK_LOCAL_HOSTNAME=localhost
 
+
+ENV SPARK_HOME=/usr/local/lib/python3.11/site-packages/pyspark
+ENV PYTHONPATH=/app
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

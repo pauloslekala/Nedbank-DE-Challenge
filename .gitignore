@@ -1,0 +1,19 @@
+# Output data
+sample/output/
+data/output/
+**/output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Spark temp
+derby.log
+metastore_db/
+spark-warehouse/
+
+# Local test artifacts
+/tmp/de_test_output*/
+*.log

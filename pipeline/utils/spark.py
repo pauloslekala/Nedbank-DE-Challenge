@@ -54,7 +54,8 @@ def get_spark_session():
         .config("spark.jars.repositories", "")\
         .config("spark.sql.parquet.compression.codec", "uncompressed")\
         .config("spark.io.compression.codec", "lz4")\
-        
+        .config("spark.hadoop.dfs.checksum.type", "NULL")
+        .config("spark.hadoop.dfs.client.write.checksum", "false")
         .getOrCreate()
     )
 
