@@ -74,3 +74,91 @@
 #     - field: account_id
 #       references: dim_accounts.account_id
 #       dq_flag: ORPHANED_ACCOUNT
+
+
+# ============================================================
+# Data Quality Rules — Nedbank DE Challenge Stage 2
+# ============================================================
+
+null_checks:
+  fact_transactions:
+    - transaction_id
+    - account_id
+    - transaction_date
+    - amount
+    - transaction_type
+    - currency
+    - channel
+
+type_checks:
+  fact_transactions:
+    amount: decimal
+    transaction_date: date
+    transaction_timestamp: timestamp
+
+domain_checks:
+  transaction_type:
+    allowed: [DEBIT, CREDIT, FEE, REVERSAL]
+    dq_flag: TYPE_MISMATCH
+  channel:
+    allowed: [POS, APP, ATM, EFT, USSD, INTERNAL]
+    dq_flag: TYPE_MISMATCH
+
+currency_normalisation:
+  target_value: ZAR
+  flag_variants: true
+  known_variants: ["R", "rands", "710", "zar", "ZAR"]
+
+date_format_checks:
+  - transaction_date
+  - open_date
+  - last_activity_date
+  - dob
+
+referential_integrity:
+  fact_transactions:
+    - field: account_id
+      references: dim_accounts.account_id
+      dq_flag: ORPHANED_ACCOUNT
+
+deduplication:
+  fact_transactions:
+    key: transaction_id
+    order_by: ingestion_timestamp
+    order: asc
+    dq_flag: DUPLICATE_DEDUPED
+
+null_primary_key:
+  dim_accounts:
+    field: account_id
+    dq_flag: NULL_REQUIRED
+    handling_action: EXCLUDED_NULL_PK
+
+
+
+# ── Issue type to handling action mapping ─────────────────────
+issue_handling:
+  duplicate_transactions:
+    issue_type: duplicate_transactions
+    dq_flag: DUPLICATE_DEDUPED
+    handling_action: DEDUPLICATED_KEEP_FIRST
+  orphaned_transactions:
+    issue_type: orphaned_transactions
+    dq_flag: ORPHANED_ACCOUNT
+    handling_action: QUARANTINED
+  amount_type_mismatch:
+    issue_type: amount_type_mismatch
+    dq_flag: TYPE_MISMATCH
+    handling_action: CAST_TO_DECIMAL
+  date_format_inconsistency:
+    issue_type: date_format_inconsistency
+    dq_flag: DATE_FORMAT
+    handling_action: NORMALISED_DATE
+  currency_variants:
+    issue_type: currency_variants
+    dq_flag: CURRENCY_VARIANT
+    handling_action: NORMALISED_CURRENCY
+  null_account_id:
+    issue_type: null_account_id
+    dq_flag: NULL_REQUIRED
+    handling_action: EXCLUDED_NULL_PK

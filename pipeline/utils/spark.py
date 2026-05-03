@@ -43,8 +43,12 @@ def get_spark_session():
         .config("spark.driver.extraJavaOptions", "-Djava.io.tmpdir=/tmp")
         .config("spark.sql.shuffle.partitions", "4")
         .config("spark.default.parallelism", "2")
+        .config("spark.memory.fraction", "0.6")
+        .config("spark.memory.storageFraction", "0.3")
+        .config("spark.shuffle.compress", "true")
+        .config("spark.shuffle.spill.compress", "true")
         .config("spark.executor.memory", "1g") \
-        .config("spark.driver.memory", "512m") \
+        .config("spark.driver.memory", "1500m") \
         .config("spark.driver.host", "127.0.0.1") \
         .config("spark.driver.bindAddress", "127.0.0.1") \
         .config("spark.ui.enabled", "false") \
